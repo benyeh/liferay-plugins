@@ -70,6 +70,16 @@ AUI.add(
 						instance._sendRequest(instance._getActionURL('markMessagesAsUnread').toString(), mbThreadIds);
 					},
 
+					showMessage: function(message) {
+						var instance = this;
+
+						var messageContainer = A.one('#' + instance._namespace + 'messageContainer');
+
+						if (messageContainer) {
+							messageContainer.html(message);
+						}
+					},
+
 					_bindCheckAllMessages: function() {
 						var instance = this;
 
@@ -343,6 +353,11 @@ AUI.add(
 						var messageDialog = Liferay.Util.openWindow(
 							{
 								dialog: {
+									after: {
+										destroy: function(event) {
+											document.location.href = redirectURL.toString();
+										}
+									},
 									centered: true,
 									constrain: true,
 									cssClass: 'private-messaging-portlet',
@@ -362,12 +377,11 @@ AUI.add(
 					_sendRequest: function(request, mbThreadIds) {
 						var instance = this;
 
+						var request = Liferay.Util.addParams(instance._namespace + 'mbThreadIds=' + mbThreadIds, request) || request;
+
 						A.io.request(
 							request,
 							{
-								data: {
-									mbThreadIds: mbThreadIds
-								},
 								on: {
 									success: function(event, id, obj) {
 										A.config.win.location = themeDisplay.getLayoutURL();
